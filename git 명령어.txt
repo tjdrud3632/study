@@ -1,0 +1,199 @@
+깃 명령어 
+깃 사용 목적 1) 버전관리 2) 백업 3) 협업
+* 유저 이름 설정
+tjdru@DESKTOP-612R1JH MINGW64 ~
+$ git config --global user.name "ask"
+
+* 유저 이메일 설정
+tjdru@DESKTOP-612R1JH MINGW64 ~
+$ git config --global user.eamil "tjdrud3632@naver.com"
+
+* 파일생성 복사
+$vi test.txt
+$ cat test.txt
+이문서는 연습 문서입니다.
+vi는 unix에서 사용하던 이름이고, LInux에서의 vim입니다.
+
+tjdru@DESKTOP-612R1JH MINGW64 ~/documents
+$ cat test.txt >> test2.txt
+
+버전관리
+
+* git 저장소 생성
+$ git init   => .git이 생성됨
+(사용자/ hello-git/옵션에서 보이게 설정 .git
+
+*git 상태 출력 ( git init 먼저 해야됨)
+$ git status
+
+(버전 관리가 필요한)
+Untracked files: 
+(수정된 내용이 커밋될 예정이다)
+Changes to be committed:
+
+*git 추가
+$ git add hello.txt
+
+ * 커밋하면서 깃 리파짓토리에 저장이 된다 (버전관리를 하면서 유지관리 됨)
+$ git commit -m "message1"
+
+*커밋한 버전에 대한 내용 출력
+$ git log
+(commit c8e9157b55ebc8be64e42d63e65d8b492b15353b - 커밋 작업의 해쉬코드 (HEAD -> master)
+- 현재 branch가 master이다
+Author: ask <tjdrud3632@naver.com> 
+Date:   Tue Mar 30 10:38:23 2021 +0900
+
+    message1 - 커밋메세지 ) - 저장소에 만들어 졌다는 것을 확인할 수 있다
+
+*수정 ( 수정해서 버전 관리가 잘 이루워지는 지 확인)
+$ vi hello.txt - 내용을 수정함
+
+* add와 commit을 한번에 해준다 -am (저장소에 저장하고 커밋)
+$ git commit -am "message2" hello.txt
+
+*커밋내용 확인
+$ git log
+--------------------------------------------------------------------------------------
+$ git status
+On branch master
+Changes not staged for commit:  - 저장소에 들어가지 않은 상태 
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   hello.txt - 수정된
+
+no changes added to commit (use "git add" and/or "git commit -a")
+--------------------------------------------------------------------------------------
+*변경사항 확인
+$ git diff (different)
+ 1
+-2 (삭제 - )
+-3
++two (추가 + )
+
+* 통계가 보이게 커밋내용 출력
+$ git log --stat
+    message3
+ hello.txt  | 1 +
+ hello2.txt | 4 ++++
+ 2 files changed, 5 insertions(+)
+
+*커밋 메세지 수정 ( 커밋 즉시에만 가능)
+git commit  --amend
+
+* 작업 되돌리기(수정내용 취소)
+$git checkout -- hello.txt
+
+* unstage하기(스테이지 되물리기)  (head - master 브렌취를 가르키는 포인터)
+$ git reset HEAD hello2.txt
+
+* commit 되돌리기
+$ git reset HEAD^
+^(최근 것)
+
+* 특정 커밋으로 되돌리기
+$ git reset --hard c8e9157b55ebc8be64e42d63e65d8b492b15353b(해쉬코드)
+ 
+$reset a - 최근 커밋을 a로 리셋한다
+
+*커밋을 삭제
+$ git revert (취소하려고 하는 커밋의 해쉬코드)
+일시적으로 커밋을 보류함
+commit e0f998609969eed9cd1aac291120253ed20f55f3 (HEAD -> master)
+Author: ask <tjdrud3632@naver.com>
+Date:   Tue Mar 30 13:22:54 2021 +0900
+
+    Revert "R5"
+
+    This reverts commit d63a57db41ea70281701d9d3f8b99d16276d7ca9.
+
+commit d63a57db41ea70281701d9d3f8b99d16276d7ca9
+Author: ask <tjdrud3632@naver.com>
+Date:   Tue Mar 30 13:20:00 2021 +0900
+
+    R5
+
+변경 이력 커밋을 새로 만들었다 
+
+----------------------------------------------------------------------------------------------------
+branch - 가지 갈래  버전관리
+*브랜치 생성
+$ git branch
+* master
+
+$git branch apple ( 브랜치 이름)
+$ git branch ( 브랜치 출력)
+
+$git log --oneline (커밋 내용을 한줄로 출력)
+
+브렌치 이동
+$git checkout apple
+
+$git add . ( 현재 수정된 모든 파일을 저장해줌)
+
+$ git log master..apple (master과 apple 브랜치의 차이를 보여주는 로그 출력 (마스터가 기준))
+master에는 없고 apple에는 있는 
+
+*branch 병합 
+$git merge o2
+
+$ git log --oneline --branches --graph
+*   6efd664 (HEAD -> master) Merge branch 'o2'
+|\
+| * 0a7cef4 (o2) o2 work 2
+* | e4a4b96 master work2
+|/
+* dc5bc15 work1
+--------------------------------------------------------------------------
+* branch 각각의 동일한 파일이 같은 부분과 다른 부분이 있을 때 merge하면 어떤 변화가 있을지
+$git merge o2
+$ cat work.txt
+#title
+content
+master content2
+
+#title
+content
+o2 content 2
+(다른 위치 수정 - 병합됨)
+
+$ cat work.txt
+#title
+content
+<<<<<<< HEAD
+master content 2
+=======
+o2 content 2
+>>>>>>> o2
+#title
+content`
+(같은 위치 수정 CONFLICT (충돌)- 자동 merge 실패 / 수정 후 커밋)
+
+* branch 삭제 ( 마스터 브렌치에서 삭제가능) /일시적으로 감춤
+$ git branch -d o2
+
+------------------------------------------------------------------------------
+*removte repository에 연결 (origin - github)
+$ git remote add origin https://github.com/tjdrud3632/test.git
+
+*확인
+$ git remote -v
+origin  https://github.com/tjdrud3632/test.git (fetch) - 가져오다
+origin  https://github.com/tjdrud3632/test.git (push) - 넣다 
+
+*push하기 (- master안에 들어 있음)
+$ git push -u origin master
+
+*pull 가져오기 (git에서 가져오기)
+$ git pull origin master
+
+*새로운 저장소에 내용 복제
+$ git clone https://github.com/tjdrud3632/test.git git_home(새로운 저장소)
+
+복제 (home)- 수정 - push - pull (office)
+ 
+조 저장조 /test/bit_web에 복제해둠
+
+
+
+
