@@ -1,0 +1,136 @@
+ctrl+d 줄 복붙
+
+RedirectAttributes가 제공하는 메소드 addFlashAttribute()
+addFlashAttribute() 는 리다이렉트 직전 플래시에 저장하는 메소드다. 리다이렉트 이후에는 소멸한다.
+addFlashAttribute 의 경우 데이타가 post 형식으로 전달 / 데이타가 한번만 사용된다.
+
+
+(model을 쓰면 url에 노출돼서 복잡해진다)
+RedirectAttributes는 model을 구현한 인터페이스
+
+redirect : list 
+list로 넘어갈 때 
+ 
+rttr.addFlashAttribute("result", board.getBno());
+result라는 모델 안에 bno값을 넣어서 list에 전달해줌
+그래서 list 뷰페이지에서 result 모델을 사용할 수 있게 함
+
+redirectAttributes의 addFlashAttribute()를 쓰면 세션을 통해 전달하므로 url에 노출되지 않음
+
+-----------------------------------------------------------------------------------------------------------
+
+두개 이상의 url을 매핑하고 싶을 때
+@GetMapping({"get","modify"})
+이렇게 묶어줌
+---------------------------------------------------------------------------------------------------------
+
+mybatis - Mybatis에서는 프로그램에 있는 SQL쿼리들을 한 구성파일에 구성하여 프로그램 코드와 
+SQL을 분리할 수 있는 장점을 가지고 있습니다. -코드의 간결성 및 유지보수성 향상
+
+모든 Mybatis 애플리케이션은 SqlSessionFactory를 사용하여 SqlSession을 열고 Query를 실행한다.
+ SqlSessionFactory는 Mybatis 설정파일과 SqlSessionFactoryBuilder를 이용하여 인스턴스를 생성한다.
+
+------------------------------------------------------------------------------------------------------------
+
+mybatis - selectKey
+selectKey  먼저 사전에 어떤 키값을 가져와서 증가시켜서 입력하거나 
+	혹은 입력 후에 증가된 키값을 가져올 필요가 있다. (2가지 일)
+
+ mybatis에서 제공하는 selectKey를 이용하면 별도의 쿼리로직을 등록할 필요없이 
+		해당 메소드에서 '일괄처리'할 수가 있다.
+
+자동증가시켜주는 시퀀스 테이블(SEQ_BOARD)을 이용해서 bno 값을 증가시킨다.
+
+언제? insert 하기 전에 일단 선택키를 활용할 것이기때문에 순서(order) 를 이전(BEFORE) 으로 설정한다.
+
+증가된 게시글 번호(bno)를 가지고, 등록 작업(insert)을 진행한다.
+
+
+----------------------------------------------------------------------------------------------------
+
+mybatis - Database
+Spring Mybatis - spring이  mybatis와 연동시켜주는 것
+( pom.xml에 추가해줘야됨)
+
+mapper - mybatis를 사용하는 것
+mapper를 xml로 사용하는 이유 - 자바코드로 쓰면 복잡해지기 때문에
+분리를 시켜놓은 것
+
+----------------------------------------------------------------------------------------------------
+<![CDATA[...]]> 
+
+쿼리를 작성할 때, '<', '>', '&'를 사용해야하는 경우가 생기는데 xml에서 그냥 사용할 경우 태그로 인식하는 경우가 종종 있다.
+이럴 경우 에러를 뱉어내기 때문에 '태그가 아니라 실제 쿼리에 필요한 코드'라고 알려줘야 한다. 
+그때 사용하는 것이 <![CDATA[...]]> 이다.
+
+-----------------------------------------------------------------------------------------------------
+
+hikariCP - connetion pool
+
+-----------------------------------------------------------------------------------------------------
+
+@RestController 데이터를 반환해주는 컨트롤러를 만들때 사용. - 
+@RestController = Controller + ResponseBody
+( @ResponseBody - DB의 데이터 목록을 json형태로 반환 )
+
+-  viewResolver 대신에 HttpMessageConverter가 동작
+문자열인 경우) StringHttpMessageConverter
+객체인 경우) MappingJackson2HttpMessageConverter
+
+@Controller - view를 반환하기 위해 사용
+ 
+----------------------------------------------------------------------------------------------------
+REST 방식으로 처리할 때 주의해야 하는 점은 브라우저나 외부에서 서버를 호출할 때 
+데이터의 포맷과 서버에서 보내주는 데이터의 타입을 명확히 설계해야 하는 것이다
+
+@PostMapping
+(value = "/new", consumes = "application/json", produces = { MediaType.TEXT_PLAIN_VALUE })
+
+핸들러가 요청과 응답) 을 보낼때 특정 타입에만 응답하도록(타입을 제한)
+* consumes - http 요청 헤더가 application/json인 것만 처리한다 - 다른 값을 가지고 오면 에러남
+
+* produces - http 응답 헤더, MediaType.TEXT_PLAIN_VALUE 타입으로 반환한다.
+
+
+MIME 타입은 application/json - json 형태  ( uri 아님) // plain/text 
+((plain text)는 그래픽 표현이나 그 밖의 오브젝트(그림 등)이 아닌, 
+	읽을 수 있는 자료의 문자열만을 대표하는 데이터이다. ))
+
+-------------------------------------------------------------------------------------------------------
+ResponseEntity
+
+HttpEntity는 http 요청(HttpHeader)과 http 응답(HttpBody)를 포함하는 클래스이다/
+
+HttpEntity 클래스를 상속받아 구현한 클래스가 RequestEntity, ResponseEntity 클래스이다
+
+ 따라서 ResponseEntity는 사용자의 HttpRequest에 대한 응답 데이터를 포함하는 클래스이다.
+(HttpStatus, HttpHeaders, HttpBody를 포함)
+-----------------------------------------------------------------------------------------------------
+
+@ResponseBody 
+viewResolver없이 문자열 그대로 사용자에게 응답해준다.
+리턴타입을 String으로 두고 @ResponseBody를 붙여줌
+
+ @ResponseBody 로 붙게 되면 spring 은 ViewResolver = null 값으로 세팅을 하게 되고 
+리턴 문자열을 페이지에 출력해줌
+
+@ResponseBody 를 쓸때는 view를 찾는것이 아니라 
+요청들어오는 페이지의 body 에 데이터를 쏟아 붓는 형태이기 때문에  
+보통 비동기 처리 (ajax) 같은곳에서 쓰입니다 
+
+-----------------------------------------------------------------------------------------------------
+
+@PathVariable - 경로를 통해서 들어온 값을 받아오는 방법이다.
+RequestMapping의 경로값에 중괄호로 감싼 이름( {필드명} )을 넣으면, 
+				PathVariable 변수로 사용이 가능해진다.
+
+-----------------------------------------------------------------------------------------------------
+
+@GetMapping, @PostMapping, DeleteMapping, @PutMapping 및 @PatchMapping
+
+
+
+
+
+
+
